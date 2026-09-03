@@ -1,111 +1,93 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Copy, Check, ArrowUpRight, Coffee, Sparkles, Mail } from 'lucide-react';
+import { Mail, Copy, Check, Linkedin, Github } from 'lucide-react';
 
 export default function ContactSection() {
   const [copied, setCopied] = useState(false);
-  const email = 'pp3399@nyu.edu';
+  const email = 'priyasha.praveen@gmail.com';
 
-  const handleCopyEmail = () => {
+  const copyEmail = () => {
     navigator.clipboard.writeText(email);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2200);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    <footer 
-      id="contact"
-      className="bg-[#FAFAFA] text-[#111111] antialiased selection:bg-neutral-200 font-sans pt-24 pb-16 border-t border-neutral-200/60"
+    <section 
+      id="contact" 
+      className="bg-[#FAFAFA] text-[#111111] antialiased selection:bg-neutral-200 font-sans py-24 md:py-36 border-t border-neutral-200/80"
     >
-      <div className="max-w-4xl mx-auto px-6">
+      <div className="max-w-4xl mx-auto px-6 space-y-10">
         
-        {/* Main Contact Container Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="relative rounded-3xl bg-white border border-neutral-200/80 p-8 md:p-14 shadow-[0_4px_30px_rgba(0,0,0,0.03)] flex flex-col justify-between overflow-hidden"
-        >
-          {/* Subtle Ambient Glow */}
-          <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-[#34A853]/5 blur-3xl pointer-events-none" />
+        {/* Section Header */}
+        <div className="space-y-2">
+          <span className="text-xs font-mono uppercase tracking-widest text-[#34A853] font-semibold">
+            Get In Touch
+          </span>
+          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-900">
+            Contact Me
+          </h2>
+          <p className="text-neutral-600 text-sm sm:text-base">
+            Feel free to reach out directly via email or connect with me on LinkedIn.
+          </p>
+        </div>
 
-          <div className="space-y-6 max-w-2xl relative z-10">
-            
-            {/* Status Pill */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-100 border border-neutral-200/60 text-xs font-mono font-medium text-neutral-700">
-              <span className="w-2 h-2 rounded-full bg-[#34A853] animate-pulse" />
-              <span>Open for Conversations &amp; Product Opportunities</span>
-            </div>
+        {/* Contact Actions */}
+        <div className="flex flex-wrap items-center gap-4">
+          <a
+            href={`mailto:${email}`}
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-mono font-medium shadow-xs transition-all active:scale-[0.98]"
+          >
+            <Mail className="w-4 h-4 text-[#34A853]" />
+            <span>Send an Email</span>
+          </a>
 
-            {/* Headline */}
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium tracking-tight text-neutral-900 leading-tight">
-              Sparked an interest, or just want to grab a coffee in NYC?{' '}
-              <span className="text-[#34A853] font-semibold">Let’s connect.</span>
-            </h2>
+          <button
+            onClick={copyEmail}
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-white border border-neutral-200/90 hover:border-neutral-300 text-neutral-700 text-xs font-mono font-medium shadow-xs transition-all active:scale-[0.98] cursor-pointer"
+          >
+            {copied ? (
+              <>
+                <Check className="w-4 h-4 text-[#34A853]" />
+                <span className="text-[#34A853]">Copied to Clipboard</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-4 h-4 text-neutral-400" />
+                <span>Copy Email</span>
+              </>
+            )}
+          </button>
+        </div>
 
-            <p className="text-neutral-500 text-base md:text-lg font-normal leading-relaxed">
-              Whether you want to discuss product strategy, data systems, or simply chat over espresso, my inbox is always open.
-            </p>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="mt-10 pt-8 border-t border-neutral-100 flex flex-wrap items-center gap-4 relative z-10">
-            
-            {/* Interactive Copy Email Pill */}
-            <button
-              onClick={handleCopyEmail}
-              className="inline-flex items-center gap-2.5 px-5 py-3 rounded-2xl bg-neutral-900 text-white hover:bg-neutral-800 shadow-sm transition-all text-xs font-mono font-semibold active:scale-95"
+        {/* Links & Footer Attribution */}
+        <div className="pt-10 border-t border-neutral-200/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs font-mono text-neutral-400">
+          <div className="flex items-center gap-6">
+            <a 
+              href="https://linkedin.com/in/priyashapraveen" 
+              target="_blank" 
+              rel="noreferrer" 
+              className="flex items-center gap-1.5 hover:text-neutral-900 transition-colors"
             >
-              {copied ? (
-                <>
-                  <Check className="w-4 h-4 text-emerald-400" />
-                  <span className="text-emerald-300">Copied {email}!</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="w-4 h-4 text-neutral-400" />
-                  <span>{email}</span>
-                  <span className="text-neutral-400 text-[10px] uppercase tracking-wider">Tap to copy</span>
-                </>
-              )}
-            </button>
-
-            {/* LinkedIn Action Button */}
-            <a
-              href="https://www.linkedin.com/in/priyasha-praveen"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-white border border-neutral-200/90 text-neutral-800 hover:border-neutral-300 hover:text-[#34A853] shadow-xs transition-all text-xs font-mono font-semibold active:scale-95"
-            >
+              <Linkedin className="w-3.5 h-3.5" />
               <span>LinkedIn</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
             </a>
-
-            {/* Direct Mail Client Trigger */}
-            <a
-              href={`mailto:${email}`}
-              className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl bg-transparent text-neutral-500 hover:text-neutral-900 transition-colors text-xs font-mono"
+            <a 
+              href="https://github.com/PriyashaPraveen" 
+              target="_blank" 
+              rel="noreferrer" 
+              className="flex items-center gap-1.5 hover:text-neutral-900 transition-colors"
             >
-              <Mail className="w-3.5 h-3.5" />
-              <span>Open Mail App &rarr;</span>
+              <Github className="w-3.5 h-3.5" />
+              <span>GitHub</span>
             </a>
           </div>
-        </motion.div>
 
-        {/* Minimal Bottom Footer */}
-        <div className="mt-16 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-neutral-400">
-          <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#34A853]" />
-            <span>Based in New York City (EDT)</span>
-          </div>
-
-          <p>© {new Date().getFullYear()} Priyasha Praveen. Designed with data &amp; care.</p>
+          <span>&copy; {new Date().getFullYear()} Priyasha Praveen</span>
         </div>
 
       </div>
-    </footer>
+    </section>
   );
 }
