@@ -30,7 +30,7 @@ export default function ContactSection() {
           </p>
         </div>
 
-        {/* Highlighted Action Buttons Row */}
+        {/* Action Row */}
         <div className="flex flex-wrap items-center gap-3">
           <a
             href={`mailto:${email}`}
@@ -57,7 +57,7 @@ export default function ContactSection() {
             )}
           </button>
 
-          {/* Highlighted LinkedIn Button */}
+          {/* Highlighted LinkedIn */}
           <a
             href="https://linkedin.com/in/priyashapraveen"
             target="_blank"
@@ -70,7 +70,7 @@ export default function ContactSection() {
             <span>LinkedIn</span>
           </a>
 
-          {/* Highlighted GitHub Button */}
+          {/* Highlighted GitHub */}
           <a
             href="https://github.com/PriyashaPraveen"
             target="_blank"
