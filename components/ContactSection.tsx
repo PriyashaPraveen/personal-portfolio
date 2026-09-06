@@ -59,7 +59,7 @@ export default function ContactSection() {
 
           {/* Highlighted LinkedIn */}
           <a
-            href="https://linkedin.com/in/priyashapraveen"
+            href="https://www.linkedin.com/in/priyasha-praveen/"
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-blue-50 border border-blue-200/80 hover:bg-blue-100/80 text-blue-800 text-xs font-mono font-medium shadow-xs transition-all active:scale-[0.98]"
