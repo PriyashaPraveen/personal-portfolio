@@ -77,7 +77,7 @@ export default function WorkExperience() {
               </p>
 
               <a
-                href="/resume.pdf"
+                href="/Priyasha_Resume.pdf"
                 download="Priyasha_Praveen_Resume.pdf"
                 className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-mono font-semibold shadow-xs transition-all active:scale-[0.98]"
               >
