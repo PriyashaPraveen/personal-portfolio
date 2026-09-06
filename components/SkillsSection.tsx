@@ -58,6 +58,16 @@ const skillGroups: SkillGroup[] = [
       'Interactive Prototyping',
     ],
   },
+  {
+    category: 'Applied AI',
+    subtitle: 'Leveraging LLMs for velocity',
+    icon: <Sparkles className="w-4 h-4 text-amber-500" />,
+    accent: 'border-amber-500/20 bg-amber-500/[0.02]',
+    skills: [
+      'Prompt Engineering',
+      'AI-Assisted Workflows',
+    ],
+  },
 ];
 
 export default function SkillsSection() {
@@ -78,7 +88,7 @@ export default function SkillsSection() {
               Skills &amp; Competencies
             </h2>
           </div>
-          <p className="text-xs font-mono text-neutral-500 max-w-xs">
+          <p className="text-xs font-mono text-neutral-500 max-w-xs md:text-right">
             Where quantitative rigor meets user-centered product execution.
           </p>
         </div>
@@ -168,48 +178,81 @@ export default function SkillsSection() {
             </div>
           </motion.div>
 
-          {/* Card 3: Product Strategy & Leadership (12 cols full-width) */}
+          {/* Card 3: Product Strategy & Leadership (8 cols) */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: 0.2 }}
-            className={`md:col-span-12 rounded-3xl bg-white border ${skillGroups[1].accent} p-7 shadow-[0_2px_16px_rgba(0,0,0,0.03)] hover:shadow-md transition-all`}
+            className={`md:col-span-8 rounded-3xl bg-white border ${skillGroups[1].accent} p-7 shadow-[0_2px_16px_rgba(0,0,0,0.03)] hover:shadow-md transition-all flex flex-col justify-between`}
           >
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-              <div className="flex items-center gap-2.5">
+            <div>
+              <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-xl bg-neutral-100/80">
+                    {skillGroups[1].icon}
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-neutral-900">
+                      {skillGroups[1].category}
+                    </h3>
+                    <p className="text-xs text-neutral-500">
+                      {skillGroups[1].subtitle}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2.5">
+                {skillGroups[1].skills.map((skill) => (
+                  <span
+                    key={skill}
+                    className="px-3.5 py-1.5 rounded-xl text-xs font-medium bg-neutral-100/80 hover:bg-blue-500/10 hover:text-blue-600 text-neutral-700 border border-neutral-200/60 transition-colors cursor-default"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Card 4: Applied AI (4 cols) */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.3 }}
+            className={`md:col-span-4 rounded-3xl bg-white border ${skillGroups[3].accent} p-7 shadow-[0_2px_16px_rgba(0,0,0,0.03)] hover:shadow-md transition-all flex flex-col justify-between`}
+          >
+            <div>
+              <div className="flex items-center gap-2.5 mb-2">
                 <div className="p-2 rounded-xl bg-neutral-100/80">
-                  {skillGroups[1].icon}
+                  {skillGroups[3].icon}
                 </div>
                 <div>
                   <h3 className="text-base font-semibold text-neutral-900">
-                    {skillGroups[1].category}
+                    {skillGroups[3].category}
                   </h3>
                   <p className="text-xs text-neutral-500">
-                    {skillGroups[1].subtitle}
+                    {skillGroups[3].subtitle}
                   </p>
                 </div>
               </div>
 
-              <span className="text-[11px] font-mono text-neutral-400">
-                Strategy &amp; Cross-Functional Collaboration
-              </span>
-            </div>
-
-            <div className="flex flex-wrap gap-2.5">
-              {skillGroups[1].skills.map((skill) => (
-                <span
-                  key={skill}
-                  className="px-3.5 py-1.5 rounded-xl text-xs font-medium bg-neutral-100/80 hover:bg-blue-500/10 hover:text-blue-600 text-neutral-700 border border-neutral-200/60 transition-colors cursor-default"
-                >
-                  {skill}
-                </span>
-              ))}
+              <div className="mt-6 flex flex-wrap gap-2">
+                {skillGroups[3].skills.map((skill) => (
+                  <span
+                    key={skill}
+                    className="px-3 py-1.5 rounded-xl text-xs font-medium bg-neutral-100/80 hover:bg-amber-500/10 hover:text-amber-600 text-neutral-700 border border-neutral-200/60 transition-colors cursor-default"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
             </div>
           </motion.div>
 
         </div>
-
       </div>
     </section>
   );

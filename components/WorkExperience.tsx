@@ -23,8 +23,8 @@ export default function WorkExperience() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           
-          {/* Left Column: Discreet Wide Group Photo */}
-          <div className="lg:col-span-4 flex flex-col items-center gap-2.5">
+          {/* Left Column: Discreet Wide Group Photo (Pushed lower to center) */}
+          <div className="lg:col-span-4 flex flex-col items-center gap-2.5 lg:pt-12">
             <div className="w-full max-w-xs aspect-video rounded-2xl bg-neutral-100 border border-neutral-200/80 overflow-hidden shadow-xs flex items-center justify-center p-1.5">
               <img 
                 src="/work experiencepic.jpg" 

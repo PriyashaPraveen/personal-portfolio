@@ -1,227 +1,529 @@
 'use client';
 
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ShieldCheck, AlertTriangle, Check, Info, Clock, AlertOctagon, Scale } from 'lucide-react';
 
-interface MetricPoint {
-  id: string;
+interface ScatterPoint {
+  id: 'azure' | 'oracle';
   name: string;
-  speed: number;        // 0 to 100
-  integrity: number;    // 0 to 100
-  overhead: number;     // 0 to 100
-  isRecommended?: boolean;
+  speed: number;
+  risk: number;
+  confidence: string;
+  deploymentTime: string;
+  blastRadius: string;
+  summary: string;
+  isChosen?: boolean;
 }
 
-const scenarios: Record<string, MetricPoint[]> = {
-  speed: [
-    { id: '1', name: 'Manual Override Table', speed: 95, integrity: 40, overhead: 20 },
-    { id: '2', name: 'Static File Upload', speed: 85, integrity: 50, overhead: 35 },
-    { id: '3', name: 'Direct SQL Patch', speed: 90, integrity: 30, overhead: 15 },
-  ],
-  accuracy: [
-    { id: '1', name: 'Full Schema Refactor', speed: 20, integrity: 98, overhead: 85 },
-    { id: '2', name: 'Multi-Pass Ledger Audit', speed: 25, integrity: 95, overhead: 75 },
-    { id: '3', name: 'End-to-End Pipeline Rewrite', speed: 15, integrity: 99, overhead: 95 },
-  ],
-  solution: [
-    { id: '1', name: 'Dynamic Fallback Matrix', speed: 88, integrity: 94, overhead: 30, isRecommended: true },
-    { id: '2', name: 'Automated Rule Routing (92%)', speed: 90, integrity: 92, overhead: 25, isRecommended: true },
-    { id: '3', name: 'Exception Queue (8%)', speed: 75, integrity: 96, overhead: 35, isRecommended: true },
-  ],
-};
+const scatterPoints: ScatterPoint[] = [
+  {
+    id: 'azure',
+    name: 'Option A: Untested Azure',
+    speed: 90,
+    risk: 85,
+    confidence: '15% – 30% (Unverified logic)',
+    deploymentTime: '< 24 Hours (Immediate cutover)',
+    blastRadius: 'High · Executive compensation skew & dispute',
+    summary: 'Meets migration speed directives on paper, but runs unverified numbers with high operational exposure.',
+  },
+  {
+    id: 'oracle',
+    name: 'Option B: Proven Oracle',
+    speed: 40,
+    risk: 5,
+    confidence: '100% (Established historical baseline)',
+    deploymentTime: '48 Hours (Standard cycle dispatch)',
+    blastRadius: 'Zero · Battle-tested logic & validated calculations',
+    summary: 'Slower relative migration velocity, but guarantees complete mathematical integrity for monthly commercial payouts.',
+    isChosen: true,
+  },
+];
+
+const validationTrajectory = [
+  { day: 0, azureConf: 20, oracleConf: 100, label: 'T-0: Dispatch Oracle / Begin Azure Shadowing' },
+  { day: 7, azureConf: 40, oracleConf: 100, label: 'Day 7: Pipeline Data Parity Testing' },
+  { day: 14, azureConf: 80, oracleConf: 100, label: 'Day 14: Patch 2 Discrepancies in Edge Logic' },
+  { day: 21, azureConf: 100, oracleConf: 100, label: 'Day 21: Full Validation Achieved & Sign-Off' },
+  { day: 28, azureConf: 100, oracleConf: 100, label: 'Day 28: Seamless Cycle N+1 Cutover' },
+];
 
 export default function HowIThink() {
-  const [activeStrategy, setActiveStrategy] = useState<'solution' | 'speed' | 'accuracy'>('solution');
-  const [selectedPoint, setSelectedPoint] = useState<MetricPoint>(scenarios['solution'][0]);
+  const [activePoint, setActivePoint] = useState<'azure' | 'oracle'>('oracle');
+  const [activeDayIdx, setActiveDayIdx] = useState<number>(3); // Defaults to Day 21
 
-  const currentPoints = scenarios[activeStrategy];
+  const activeData = scatterPoints.find((p) => p.id === activePoint) || scatterPoints[1];
+  const activeDay = validationTrajectory[activeDayIdx];
+
+  // Chart dimensions & scaling helpers
+  const scatterWidth = 520;
+  const scatterHeight = 320;
+  const padding = 45;
+
+  const getScatterX = (val: number) => padding + (val / 100) * (scatterWidth - padding * 2);
+  const getScatterY = (val: number) => scatterHeight - padding - (val / 100) * (scatterHeight - padding * 2);
+
+  const lineChartWidth = 560;
+  const lineChartHeight = 220;
+  const linePad = 40;
+
+  const getLineX = (day: number) => linePad + (day / 28) * (lineChartWidth - linePad * 2);
+  const getLineY = (conf: number) => lineChartHeight - linePad - (conf / 100) * (lineChartHeight - linePad * 1.5);
 
   return (
-    <section id="thinking" className="py-10 md:py-14 border-t border-neutral-200/70 bg-white">
-      <div className="max-w-4xl mx-auto px-6 space-y-8">
+    <section 
+      id="thinking"
+      className="bg-[#FAFAFA] text-[#111111] antialiased selection:bg-neutral-200 font-sans py-24 md:py-36 border-t border-neutral-200/80 overflow-hidden"
+    >
+      <div className="max-w-5xl mx-auto px-6 space-y-16">
         
-        {/* Header with Curly Arrow Callout */}
-        <div className="space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <span className="text-xs font-mono uppercase tracking-widest text-[#34A853] font-semibold">
-              Quantitative Systems Walkthrough // HEINEKEN
+        {/* Section Header */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-neutral-200/80 pb-6 relative">
+          <div className="space-y-1">
+            <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#6DB77D] font-bold">
+              Quantitative Systems Walkthrough // Heineken
             </span>
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-900">
+              How I Think: A Trade-Off Analysis
+            </h2>
+          </div>
 
-            {/* Hand-drawn note & curly arrow */}
-            <div className="flex items-center gap-2 text-neutral-500">
-              <span className="font-serif italic text-xs sm:text-sm text-neutral-700 bg-amber-50 border border-amber-200/80 px-3 py-1 rounded-full shadow-2xs">
-                ✦ A real-world trade-off I solved in 48 hours
+          {/* Curly Arrow & Real Tradeoff Callout */}
+          <div className="flex items-center gap-2 text-neutral-500 sm:pb-2">
+            <span className="font-serif italic text-sm text-neutral-700 bg-amber-50 border border-amber-200/70 px-3 py-1 rounded-full shadow-2xs">
+              ✦ A real-world trade-off I solved in 48 hours
+            </span>
+            <svg className="w-6 h-6 text-neutral-400 -rotate-12 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+              <path d="M3 17c4-8 12-8 16-2m0 0l-4-1m4 1l-1-4" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+        </div>
+
+        {/* 0. PROBLEM CONTEXT BRIEFING */}
+        <div className="space-y-8">
+          <div className="max-w-3xl space-y-3">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-400 font-semibold">
+              The Context // T-48 Hours
+            </span>
+            <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-950 leading-snug">
+              When an organizational directive collides with calculation integrity.
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            {/* 1. The Situation */}
+            <div className="p-6 rounded-3xl bg-white border border-neutral-200/80 shadow-[0_2px_12px_rgba(0,0,0,0.02)] flex flex-col justify-between space-y-4">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-xs font-mono font-bold text-neutral-900 uppercase">
+                  <Clock className="w-4 h-4 text-[#6DB77D]" />
+                  <span>01 &middot; The Situation</span>
+                </div>
+                <p className="text-sm text-neutral-600 leading-relaxed">
+                  We were in the middle of a high-priority enterprise migration from Oracle to Azure. My data pipeline had technically completed its technical migration, but the downstream output logic was completely untested. Simultaneously, an immovable 48-hour deadline hit to deliver monthly sales incentive targets.
+                </p>
+              </div>
+              <span className="text-[11px] font-mono text-neutral-400">Status: Unvalidated Pipeline</span>
+            </div>
+
+            {/* 2. The Stakes */}
+            <div className="p-6 rounded-3xl bg-white border border-neutral-200/80 shadow-[0_2px_12px_rgba(0,0,0,0.02)] flex flex-col justify-between space-y-4">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-xs font-mono font-bold text-neutral-900 uppercase">
+                  <AlertOctagon className="w-4 h-4 text-red-500" />
+                  <span>02 &middot; The Stakes</span>
+                </div>
+                <p className="text-sm text-neutral-600 leading-relaxed">
+                  These numbers were not vanity metrics—they directly dictated variable compensation for field executives and commercial leaders across regions. Releasing incorrect targets would trigger financial misalignments, payout disputes, and immediate erosion of leadership trust.
+                </p>
+              </div>
+              <span className="text-[11px] font-mono text-red-600 font-medium">Impact: Direct Executive Compensation</span>
+            </div>
+
+            {/* 3. The Constraint */}
+            <div className="p-6 rounded-3xl bg-white border border-neutral-200/80 shadow-[0_2px_12px_rgba(0,0,0,0.02)] flex flex-col justify-between space-y-4">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-xs font-mono font-bold text-neutral-900 uppercase">
+                  <Scale className="w-4 h-4 text-amber-500" />
+                  <span>03 &middot; The Constraint</span>
+                </div>
+                <p className="text-sm text-neutral-600 leading-relaxed">
+                  Because the business cycle could not be paused, intermediary workarounds were impossible. The decision collapsed into exactly two viable architectural options within the 48-hour window: deploy untested Azure to satisfy migration deadlines, or deploy verified Oracle and defend the validation delay.
+                </p>
+              </div>
+              <span className="text-[11px] font-mono text-neutral-400">Boundary: Binary Choice Only</span>
+            </div>
+
+          </div>
+        </div>
+
+        {/* 1. VISUALIZATION 1: RISK vs. SPEED SCATTER PLOT */}
+        <div className="rounded-3xl bg-white border border-neutral-200/90 p-6 md:p-10 shadow-[0_2px_20px_rgba(0,0,0,0.02)] space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-100 pb-4">
+            <div>
+              <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-400 font-semibold">
+                Plot 01 // Decision Boundary
               </span>
-              <svg className="w-5 h-5 text-neutral-400 -rotate-12 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
-                <path d="M3 17c4-8 12-8 16-2m0 0l-4-1m4 1l-1-4" strokeLinecap="round" strokeLinejoin="round" />
+              <h3 className="text-lg font-bold tracking-tight text-neutral-900">
+                Risk vs. Velocity Trade-Off Envelope
+              </h3>
+            </div>
+
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100 text-[11px] font-mono text-neutral-600">
+              <Info className="w-3.5 h-3.5 text-neutral-400" />
+              <span>Hard Constraint: 48-Hour Deadline</span>
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            
+            {/* SVG Scatter Plot */}
+            <div className="lg:col-span-7 flex justify-center overflow-x-auto">
+              <svg 
+                viewBox={`0 0 ${scatterWidth} ${scatterHeight}`} 
+                className="w-full max-w-[520px] h-auto font-mono text-[10px] select-none"
+              >
+                {/* Feasibility Constraint Zone */}
+                <rect
+                  x={getScatterX(35)}
+                  y={getScatterY(95)}
+                  width={getScatterX(95) - getScatterX(35)}
+                  height={getScatterY(0) - getScatterY(95)}
+                  fill="rgba(0,0,0,0.018)"
+                  stroke="#E5E7EB"
+                  strokeDasharray="4 4"
+                  rx="12"
+                />
+                <text 
+                  x={getScatterX(38)} 
+                  y={getScatterY(90)} 
+                  fill="#9CA3AF" 
+                  className="text-[9px] uppercase tracking-wider"
+                >
+                  48-Hour Feasible Envelope
+                </text>
+
+                {/* Grid Lines */}
+                {[0, 25, 50, 75, 100].map((v) => (
+                  <g key={v}>
+                    <line
+                      x1={padding}
+                      y1={getScatterY(v)}
+                      x2={scatterWidth - padding}
+                      y2={getScatterY(v)}
+                      stroke="#F3F4F6"
+                      strokeWidth="1"
+                    />
+                    <text x={padding - 8} y={getScatterY(v) + 3} textAnchor="end" fill="#9CA3AF">
+                      {v}%
+                    </text>
+
+                    <line
+                      x1={getScatterX(v)}
+                      y1={padding}
+                      x2={getScatterX(v)}
+                      y2={scatterHeight - padding}
+                      stroke="#F3F4F6"
+                      strokeWidth="1"
+                    />
+                    <text x={getScatterX(v)} y={scatterHeight - padding + 15} textAnchor="middle" fill="#9CA3AF">
+                      {v}%
+                    </text>
+                  </g>
+                ))}
+
+                {/* Axis Titles */}
+                <text 
+                  x={scatterWidth / 2} 
+                  y={scatterHeight - 8} 
+                  textAnchor="middle" 
+                  fill="#6B7280" 
+                  className="font-bold text-[10px] uppercase tracking-wider"
+                >
+                  Deployment Speed &rarr;
+                </text>
+                <text 
+                  x={-scatterHeight / 2} 
+                  y={14} 
+                  transform="rotate(-90)" 
+                  textAnchor="middle" 
+                  fill="#6B7280" 
+                  className="font-bold text-[10px] uppercase tracking-wider"
+                >
+                  Operational Risk Level &rarr;
+                </text>
+
+                {/* Data Point: Azure (90, 85) */}
+                <g 
+                  onClick={() => setActivePoint('azure')}
+                  className="cursor-pointer group"
+                >
+                  <circle
+                    cx={getScatterX(90)}
+                    cy={getScatterY(85)}
+                    r={activePoint === 'azure' ? 14 : 9}
+                    fill="#EF4444"
+                    fillOpacity={activePoint === 'azure' ? 0.3 : 0.15}
+                    className="transition-all duration-200"
+                  />
+                  <circle
+                    cx={getScatterX(90)}
+                    cy={getScatterY(85)}
+                    r="5"
+                    fill="#EF4444"
+                  />
+                  <text
+                    x={getScatterX(90) - 10}
+                    y={getScatterY(85) - 12}
+                    textAnchor="end"
+                    fill="#DC2626"
+                    className="font-bold text-[11px]"
+                  >
+                    Azure (90, 85)
+                  </text>
+                </g>
+
+                {/* Data Point: Oracle (40, 5) - CHOSEN */}
+                <g 
+                  onClick={() => setActivePoint('oracle')}
+                  className="cursor-pointer group"
+                >
+                  <circle
+                    cx={getScatterX(40)}
+                    cy={getScatterY(5)}
+                    r={activePoint === 'oracle' ? 16 : 10}
+                    fill="#6DB77D"
+                    fillOpacity={activePoint === 'oracle' ? 0.35 : 0.2}
+                    className="transition-all duration-200"
+                  />
+                  <circle
+                    cx={getScatterX(40)}
+                    cy={getScatterY(5)}
+                    r="6"
+                    fill="#6DB77D"
+                  />
+                  <text
+                    x={getScatterX(40) + 12}
+                    y={getScatterY(5) - 8}
+                    fill="#15803D"
+                    className="font-bold text-[11px]"
+                  >
+                    Oracle (40, 5) ✓ CHOSEN
+                  </text>
+                </g>
               </svg>
             </div>
-          </div>
 
-          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-900">
-            How I Think: A Trade-Off Analysis
-          </h2>
-          <p className="text-neutral-600 text-sm sm:text-base max-w-2xl">
-            When an organizational deadline collides with calculation accuracy: balancing 48-hour delivery constraints against automated target integrity.
-          </p>
-        </div>
+            {/* Interactive Scatter Inspector Card */}
+            <div className="lg:col-span-5 space-y-4">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeData.id}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.2 }}
+                  className={`p-6 rounded-2xl border text-sm font-sans space-y-4 ${
+                    activeData.isChosen
+                      ? 'border-[#6DB77D] bg-emerald-50/40'
+                      : 'border-red-200 bg-red-50/40'
+                  }`}
+                >
+                  <div className="flex items-center justify-between border-b pb-3 border-black/[0.06]">
+                    <span className="font-mono text-xs font-bold text-neutral-900">
+                      {activeData.name}
+                    </span>
+                    {activeData.isChosen && (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#6DB77D] text-white text-[10px] font-mono font-bold">
+                        <Check className="w-3 h-3" /> CHOSEN PATH
+                      </span>
+                    )}
+                  </div>
 
-        {/* Strategy Switcher */}
-        <div className="flex flex-wrap gap-2 p-1.5 bg-neutral-100/80 rounded-2xl w-fit border border-neutral-200/70">
-          <button
-            onClick={() => {
-              setActiveStrategy('solution');
-              setSelectedPoint(scenarios['solution'][0]);
-            }}
-            className={`px-4 py-2 rounded-xl text-xs font-mono font-medium transition-all ${
-              activeStrategy === 'solution'
-                ? 'bg-white text-[#34A853] shadow-xs'
-                : 'text-neutral-600 hover:text-neutral-900'
-            }`}
-          >
-            Recommended: Dual-Stage Fallback
-          </button>
-          <button
-            onClick={() => {
-              setActiveStrategy('speed');
-              setSelectedPoint(scenarios['speed'][0]);
-            }}
-            className={`px-4 py-2 rounded-xl text-xs font-mono font-medium transition-all ${
-              activeStrategy === 'speed'
-                ? 'bg-white text-neutral-900 shadow-xs'
-                : 'text-neutral-600 hover:text-neutral-900'
-            }`}
-          >
-            Path A: Hardcoded Speed
-          </button>
-          <button
-            onClick={() => {
-              setActiveStrategy('accuracy');
-              setSelectedPoint(scenarios['accuracy'][0]);
-            }}
-            className={`px-4 py-2 rounded-xl text-xs font-mono font-medium transition-all ${
-              activeStrategy === 'accuracy'
-                ? 'bg-white text-neutral-900 shadow-xs'
-                : 'text-neutral-600 hover:text-neutral-900'
-            }`}
-          >
-            Path B: Full Architecture Rebuild
-          </button>
-        </div>
+                  <p className="text-xs text-neutral-600 leading-relaxed">
+                    {activeData.summary}
+                  </p>
 
-        {/* Interactive Visualization Area */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 sm:p-8 rounded-3xl bg-neutral-50/70 border border-neutral-200/80 shadow-xs">
-          
-          {/* Scatter Chart (Integrity vs Speed) */}
-          <div className="md:col-span-2 space-y-4">
-            <div className="flex items-center justify-between text-xs font-mono text-neutral-500">
-              <span>Integrity vs Delivery Speed</span>
-              <span>Hover points to inspect</span>
+                  <div className="space-y-2 pt-2 text-xs font-mono">
+                    <div className="flex justify-between">
+                      <span className="text-neutral-500">Data Confidence:</span>
+                      <span className="font-bold text-neutral-900">{activeData.confidence}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-neutral-500">Deployment SLA:</span>
+                      <span className="font-bold text-neutral-900">{activeData.deploymentTime}</span>
+                    </div>
+                    <div className="flex flex-col pt-1">
+                      <span className="text-neutral-500">Business Impact Risk:</span>
+                      <span className={`font-semibold mt-0.5 ${activeData.isChosen ? 'text-emerald-700' : 'text-red-600'}`}>
+                        {activeData.blastRadius}
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+
+              <div className="flex gap-2 font-mono text-xs">
+                <button
+                  onClick={() => setActivePoint('oracle')}
+                  className={`px-3 py-1.5 rounded-xl border transition-all cursor-pointer ${
+                    activePoint === 'oracle' 
+                      ? 'bg-[#6DB77D] text-white border-[#6DB77D]' 
+                      : 'bg-white border-neutral-200 text-neutral-600'
+                  }`}
+                >
+                  Inspect Oracle
+                </button>
+                <button
+                  onClick={() => setActivePoint('azure')}
+                  className={`px-3 py-1.5 rounded-xl border transition-all cursor-pointer ${
+                    activePoint === 'azure' 
+                      ? 'bg-red-500 text-white border-red-500' 
+                      : 'bg-white border-neutral-200 text-neutral-600'
+                  }`}
+                >
+                  Inspect Azure
+                </button>
+              </div>
             </div>
 
-            <div className="relative h-64 sm:h-72 w-full bg-white rounded-2xl border border-neutral-200/70 p-6 flex flex-col justify-between overflow-hidden shadow-2xs">
-              {/* Grid Lines */}
-              <div className="absolute inset-x-6 top-1/2 border-b border-dashed border-neutral-200 pointer-events-none" />
-              <div className="absolute inset-y-6 left-1/2 border-r border-dashed border-neutral-200 pointer-events-none" />
+          </div>
+        </div>
 
-              {/* Data Points */}
-              {currentPoints.map((point) => {
-                const isSelected = selectedPoint.name === point.name;
+        {/* 2. VISUALIZATION 2: CONFIDENCE BUILD-OVER-TIME */}
+        <div className="rounded-3xl bg-white border border-neutral-200/90 p-6 md:p-10 shadow-[0_2px_20px_rgba(0,0,0,0.02)] space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-100 pb-4">
+            <div>
+              <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-400 font-semibold">
+                Plot 02 // Parallel De-risking
+              </span>
+              <h3 className="text-lg font-bold tracking-tight text-neutral-900">
+                Confidence Build-Over-Time Trajectory
+              </h3>
+            </div>
+
+            <span className="text-xs font-mono text-neutral-500">
+              Horizon: 0 to 28 Days
+            </span>
+          </div>
+
+          <p className="text-xs text-neutral-500 max-w-2xl font-sans leading-relaxed">
+            By keeping Oracle in production at 100% reliability, the team bought a parallel 21-day validation window. Azure confidence was methodically graduated from 20% to 100% without risking live compensation targets.
+          </p>
+
+          <div className="w-full overflow-x-auto">
+            <svg 
+              viewBox={`0 0 ${lineChartWidth} ${lineChartHeight}`} 
+              className="w-full max-w-[680px] h-auto font-mono text-[10px] select-none mx-auto"
+            >
+              {[0, 25, 50, 75, 100].map((c) => (
+                <g key={c}>
+                  <line
+                    x1={linePad}
+                    y1={getLineY(c)}
+                    x2={lineChartWidth - linePad}
+                    y2={getLineY(c)}
+                    stroke="#F3F4F6"
+                    strokeWidth="1"
+                  />
+                  <text x={linePad - 6} y={getLineY(c) + 3} textAnchor="end" fill="#9CA3AF">
+                    {c}%
+                  </text>
+                </g>
+              ))}
+
+              {[0, 7, 14, 21, 28].map((d) => (
+                <text 
+                  key={d} 
+                  x={getLineX(d)} 
+                  y={lineChartHeight - 8} 
+                  textAnchor="middle" 
+                  fill="#9CA3AF"
+                >
+                  Day {d}
+                </text>
+              ))}
+
+              {/* Oracle Baseline: Constant 100% */}
+              <line
+                x1={getLineX(0)}
+                y1={getLineY(100)}
+                x2={getLineX(28)}
+                y2={getLineY(100)}
+                stroke="#6DB77D"
+                strokeWidth="2.5"
+              />
+              <text 
+                x={getLineX(1)} 
+                y={getLineY(100) - 8} 
+                fill="#15803D" 
+                className="font-bold text-[9px] uppercase tracking-wider"
+              >
+                Oracle Baseline (100% Steady State)
+              </text>
+
+              {/* Azure Ramp Curve */}
+              <path
+                d={`M ${getLineX(0)} ${getLineY(20)} L ${getLineX(7)} ${getLineY(40)} L ${getLineX(14)} ${getLineY(80)} L ${getLineX(21)} ${getLineY(100)} L ${getLineX(28)} ${getLineY(100)}`}
+                fill="none"
+                stroke="#3B82F6"
+                strokeWidth="2.5"
+                strokeDasharray="4 3"
+              />
+              <text 
+                x={getLineX(14)} 
+                y={getLineY(80) + 16} 
+                fill="#2563EB" 
+                className="font-bold text-[9px] uppercase tracking-wider"
+              >
+                Azure Validation Ramp &rarr;
+              </text>
+
+              {validationTrajectory.map((pt, i) => {
+                const isSelected = activeDayIdx === i;
                 return (
-                  <button
-                    key={point.name}
-                    onClick={() => setSelectedPoint(point)}
-                    onMouseEnter={() => setSelectedPoint(point)}
-                    style={{
-                      left: `${point.speed * 0.75 + 10}%`,
-                      bottom: `${point.integrity * 0.75 + 10}%`,
-                    }}
-                    className={`absolute -translate-x-1/2 translate-y-1/2 p-2 rounded-full transition-transform cursor-pointer ${
-                      isSelected ? 'scale-125 z-20' : 'hover:scale-110 z-10'
-                    }`}
+                  <g 
+                    key={pt.day} 
+                    onClick={() => setActiveDayIdx(i)}
+                    className="cursor-pointer group"
                   >
-                    <span
-                      className={`block w-4 h-4 rounded-full border-2 ${
-                        point.isRecommended
-                          ? 'bg-[#34A853] border-white shadow-xs'
-                          : 'bg-neutral-800 border-white'
-                      }`}
+                    <circle
+                      cx={getLineX(pt.day)}
+                      cy={getLineY(pt.azureConf)}
+                      r={isSelected ? 6 : 4}
+                      fill="#3B82F6"
+                      stroke="#FFFFFF"
+                      strokeWidth="2"
                     />
-                  </button>
+                  </g>
                 );
               })}
-
-              {/* Axis Labels */}
-              <div className="flex justify-between text-[11px] font-mono text-neutral-400 z-0">
-                <span>High Calculation Integrity ↑</span>
-                <span>Balanced State</span>
-              </div>
-              <div className="flex justify-between text-[11px] font-mono text-neutral-400 z-0">
-                <span>← Slower Execution</span>
-                <span>Fast 48-Hr Delivery →</span>
-              </div>
-            </div>
+            </svg>
           </div>
 
-          {/* Metric Inspection Panel */}
-          <div className="flex flex-col justify-between p-5 rounded-2xl bg-white border border-neutral-200/80 shadow-2xs space-y-4">
-            <div className="space-y-3">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
-                Selected Component
-              </span>
-              <h4 className="text-sm font-semibold text-neutral-900 leading-tight">
-                {selectedPoint.name}
-              </h4>
-
-              {/* Stat bars */}
-              <div className="space-y-2.5 pt-2">
-                <div>
-                  <div className="flex justify-between text-xs font-mono text-neutral-600 mb-1">
-                    <span>Speed / SLA</span>
-                    <span className="font-semibold text-neutral-900">{selectedPoint.speed}%</span>
-                  </div>
-                  <div className="w-full bg-neutral-100 rounded-full h-1.5">
-                    <div className="bg-neutral-900 h-1.5 rounded-full" style={{ width: `${selectedPoint.speed}%` }} />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex justify-between text-xs font-mono text-neutral-600 mb-1">
-                    <span>Calculation Integrity</span>
-                    <span className="font-semibold text-[#34A853]">{selectedPoint.integrity}%</span>
-                  </div>
-                  <div className="w-full bg-neutral-100 rounded-full h-1.5">
-                    <div className="bg-[#34A853] h-1.5 rounded-full" style={{ width: `${selectedPoint.integrity}%` }} />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex justify-between text-xs font-mono text-neutral-600 mb-1">
-                    <span>Operational Overhead</span>
-                    <span className="font-semibold text-neutral-900">{selectedPoint.overhead}%</span>
-                  </div>
-                  <div className="w-full bg-neutral-100 rounded-full h-1.5">
-                    <div className="bg-amber-500 h-1.5 rounded-full" style={{ width: `${selectedPoint.overhead}%` }} />
-                  </div>
-                </div>
-              </div>
+          <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-mono text-xs">
+            <div>
+              <span className="text-neutral-400">INSPECTED MILESTONE:</span>{' '}
+              <span className="font-bold text-neutral-900">{activeDay.label}</span>
             </div>
-
-            <p className="text-xs text-neutral-500 leading-relaxed border-t border-neutral-100 pt-3">
-              {activeStrategy === 'solution' && 'Balances automation velocity while preserving strict ledger calculation standards.'}
-              {activeStrategy === 'speed' && 'Delivers within 48 hours but creates technical debt and manual verification risks.'}
-              {activeStrategy === 'accuracy' && 'Architecturally pure, but jeopardizes mission-critical executive deadlines.'}
-            </p>
+            <div className="flex items-center gap-4 text-[11px]">
+              <span>Oracle: <strong className="text-[#6DB77D]">{activeDay.oracleConf}%</strong></span>
+              <span>Azure Confidence: <strong className="text-blue-600">{activeDay.azureConf}%</strong></span>
+            </div>
           </div>
-
         </div>
 
-        {/* Humanized Takeaway (Replaced Engineering Insight) */}
-        <div className="p-6 rounded-2xl bg-neutral-50 border border-neutral-200/80 shadow-2xs space-y-2">
-          <span className="text-xs font-mono uppercase tracking-wider text-[#34A853] font-semibold">
-            What This Taught Me
-          </span>
-          <p className="text-sm text-neutral-700 leading-relaxed">
-            When operational speed clashes with system logic, the product role isn’t just about enforcing absolute algorithmic purity—it’s about building graceful fallbacks that preserve business trust without compromising data reliability.
+        {/* Narrative Synthesis Footer */}
+        <div className="rounded-3xl bg-neutral-900 text-white p-8 md:p-10 shadow-lg space-y-3 font-sans">
+          <div className="flex items-center gap-2 text-xs font-mono text-[#6DB77D]">
+            <span>✦</span>
+            <span className="uppercase tracking-widest font-semibold">What I Actually Learned</span>
+          </div>
+          <p className="text-2xl sm:text-3xl font-medium tracking-tight leading-snug">
+            &ldquo;When business deadlines clash with system readiness, your job isn't to force a perfect solution—it's to engineer a safe fallback.&rdquo;
+          </p>
+          <p className="text-neutral-400 text-xs sm:text-sm font-normal max-w-2xl pt-1">
+            Automating standard targets is straightforward. The real value in this 48-hour crunch came from building a dual-stage exception routing framework that protected edge cases from failing silently, safeguarding both payout accuracy and executive trust.
           </p>
         </div>
 
